@@ -95,7 +95,7 @@ class Product(BaseModel):
     product_name: str = Field(..., description="Nombre del producto")
     supplier_id: int = Field(..., description="ID del proveedor")
 
-# Sale models
+
 class SaleCreate(BaseModel):
     sale_date: date = Field(..., description="Fecha de venta")
     amount: Decimal = Field(..., description="Monto de la venta")
