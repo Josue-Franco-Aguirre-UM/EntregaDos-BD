@@ -8,7 +8,6 @@ __pycache__/
 *.py[cod]
 *.so
 
-Schema.sql
 # Archivos de distribución / empaquetado
 *.egg
 *.egg-info/
