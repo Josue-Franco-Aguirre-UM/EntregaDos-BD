@@ -5,8 +5,8 @@ app = FastAPI()
 
 app.include_router(router)
 
-app.title = "API de Josue"
+app.title = "API de JosueCompany"
 
 @app.get("/")
 async def root():
-    return {"message": "Bienvenido a la API de Josue"}
+    return {"message": "Bienvenido a la API de JosueCompany"}
