@@ -6,7 +6,6 @@ import mysql.connector
 
 router = APIRouter()
 
-# Department endpoints
 @router.post("/departments/", response_model=models.Department, tags=["Departments"])
 async def create_department(department: models.DepartmentCreate):
     try:
@@ -72,7 +71,6 @@ async def create_departments_bulk(departments: List[models.DepartmentCreate]):
         cursor.close()
         conn.close()
 
-# Employee endpoints
 @router.post("/employees/", response_model=models.Employee, tags=["Employees"])
 async def create_employee(employee: models.EmployeeCreate):
     try:
@@ -142,7 +140,6 @@ async def create_employees_bulk(employees: List[models.EmployeeCreate]):
         cursor.close()
         conn.close()
 
-# Project endpoints
 @router.post("/projects/", response_model=models.Project, tags=["Projects"])
 async def create_project(project: models.ProjectCreate):
     try:
@@ -212,7 +209,6 @@ async def create_projects_bulk(projects: List[models.ProjectCreate]):
         cursor.close()
         conn.close()
 
-# Customer endpoints
 @router.post("/customers/", response_model=models.Customer, tags=["Customers"])
 async def create_customer(customer: models.CustomerCreate):
     try:
@@ -278,7 +274,6 @@ async def create_customers_bulk(customers: List[models.CustomerCreate]):
         cursor.close()
         conn.close()
 
-# Supplier endpoints
 @router.post("/suppliers/", response_model=models.Supplier, tags=["Suppliers"])
 async def create_supplier(supplier: models.SupplierCreate):
     try:
@@ -344,7 +339,6 @@ async def create_suppliers_bulk(suppliers: List[models.SupplierCreate]):
         cursor.close()
         conn.close()
 
-# Product endpoints
 @router.post("/products/", response_model=models.Product, tags=["Products"])
 async def create_product(product: models.ProductCreate):
     try:
@@ -408,7 +402,6 @@ async def create_products_bulk(products: List[models.ProductCreate]):
         cursor.close()
         conn.close()
 
-# Sale endpoints
 @router.post("/sales/", response_model=models.Sale, tags=["Sales"])
 async def create_sale(sale: models.SaleCreate):
     try:

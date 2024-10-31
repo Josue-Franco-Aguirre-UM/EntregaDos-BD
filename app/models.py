@@ -3,7 +3,6 @@ from datetime import date
 from typing import Optional
 from decimal import Decimal
 
-# Department models
 class DepartmentCreate(BaseModel):
     department_name: str = Field(..., description="Nombre del departamento")
     place: str = Field(..., description="Lugar del departamento")
@@ -15,7 +14,6 @@ class Department(BaseModel):
     place: str = Field(..., description="Lugar del departamento")
     department_head: int = Field(..., description="ID del jefe de departamento")
 
-# Employee models
 class EmployeeCreate(BaseModel):
     first_name: str = Field(..., description="Nombre del empleado")
     last_name: str = Field(..., description="Apellido del empleado")
@@ -37,7 +35,6 @@ class Employee(BaseModel):
     position: str = Field(..., description="Cargo del empleado")
     manager_id: Optional[int] = Field(None, description="ID del manager")
 
-# Project models
 class ProjectCreate(BaseModel):
     project_name: str = Field(..., description="Nombre del proyecto")
     start_date: date = Field(..., description="Fecha de inicio")
@@ -57,7 +54,6 @@ class Project(BaseModel):
     budget: Decimal = Field(..., description="Presupuesto del proyecto")
     project_manager: int = Field(..., description="ID del gerente del proyecto")
 
-# Customer models
 class CustomerCreate(BaseModel):
     customer_name: str = Field(..., description="Nombre del cliente")
     country: str = Field(..., description="País del cliente")
@@ -71,7 +67,6 @@ class Customer(BaseModel):
     phone_number: str = Field(..., description="Número de teléfono")
     email: str = Field(..., description="Email del cliente")
 
-# Supplier models
 class SupplierCreate(BaseModel):
     supplier_name: str = Field(..., description="Nombre del proveedor")
     contact_info: str = Field(..., description="Información de contacto")
@@ -85,7 +80,6 @@ class Supplier(BaseModel):
     country: str = Field(..., description="País del proveedor")
     phone_number: str = Field(..., description="Número de teléfono")
 
-# Product models
 class ProductCreate(BaseModel):
     product_name: str = Field(..., description="Nombre del producto")
     supplier_id: int = Field(..., description="ID del proveedor")
@@ -95,7 +89,6 @@ class Product(BaseModel):
     product_name: str = Field(..., description="Nombre del producto")
     supplier_id: int = Field(..., description="ID del proveedor")
 
-# Sale models
 class SaleCreate(BaseModel):
     sale_date: date = Field(..., description="Fecha de venta")
     amount: Decimal = Field(..., description="Monto de la venta")
