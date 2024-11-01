@@ -20,7 +20,6 @@ async def create_department(department: models.DepartmentCreate):
         cursor.execute(query, values)
         conn.commit()
         
-        # Obtener el ID generado
         department_id = cursor.lastrowid
         return {
             "department_id": department_id,
@@ -119,27 +118,73 @@ async def list_employees():
 async def create_employees_bulk(employees: List[models.EmployeeCreate]):
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("SELECT * FROM departments")
+        existing_departments = cursor.fetchall()
+        print("\nExisting departments in database:", existing_departments)
+        
+        print("\nEmployees to insert:")
+        for emp in employees:
+            print(f"- {emp.first_name} {emp.last_name} (Dept ID: {emp.department_id})")
+        
+        department_ids = {emp.department_id for emp in employees}
+        print("\nDepartment IDs needed:", department_ids)
+        
+        placeholders = ','.join(['%s'] * len(department_ids))
+        cursor.execute(
+            f"SELECT department_id FROM departments WHERE department_id IN ({placeholders})", 
+            tuple(department_ids)
+        )
+        existing_dept_ids = {row['department_id'] for row in cursor.fetchall()}
+        print("Department IDs found:", existing_dept_ids)
+        
+        missing_dept_ids = department_ids - existing_dept_ids
+        if missing_dept_ids:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Departments with IDs {missing_dept_ids} do not exist. "
+                    f"Please create these departments first. "
+                    f"Existing department IDs are: {existing_dept_ids}"
+            )
+        
         query = """INSERT INTO employees 
                 (first_name, last_name, email, department_id, 
                 hire_date, salary, position, manager_id) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+        
         values = [(e.first_name, e.last_name, e.email, e.department_id,
                 e.hire_date, e.salary, e.position, e.manager_id) 
                 for e in employees]
-        cursor.executemany(query, values)
-        conn.commit()
         
-        first_id = cursor.lastrowid
         result = []
-        for i, emp in enumerate(employees):
-            result.append({
-                "employee_id": first_id + i,
-                **emp.dict()
-            })
+        for i, value in enumerate(values):
+            try:
+                print(f"\nTrying to insert employee {i+1}:", value)
+                cursor.execute(query, value)
+                employee_id = cursor.lastrowid
+                result.append({
+                    "employee_id": employee_id,
+                    **employees[i].dict()
+                })
+                print(f"Successfully inserted employee {i+1}")
+            except mysql.connector.Error as err:
+                print(f"Error inserting employee {i+1}: {err}")
+                conn.rollback()
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Error inserting employee {employees[i].first_name} {employees[i].last_name}: {str(err)}"
+                )
+        
+        conn.commit()
         return result
+        
     except mysql.connector.Error as err:
-        raise HTTPException(status_code=400, detail=str(err))
+        print(f"MySQL Error: {err}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Database error: {str(err)}"
+        )
     finally:
         cursor.close()
         conn.close()
@@ -391,24 +436,66 @@ async def list_products():
 async def create_products_bulk(products: List[models.ProductCreate]):
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
-        query = """INSERT INTO products 
-                (product_name, supplier_id) 
-                VALUES (%s, %s)"""
-        values = [(p.product_name, p.supplier_id) for p in products]
-        cursor.executemany(query, values)
-        conn.commit()
+        cursor = conn.cursor(dictionary=True)
         
-        first_id = cursor.lastrowid
+        cursor.execute("SELECT * FROM suppliers")
+        existing_suppliers = cursor.fetchall()
+        print("\nExisting suppliers in database:", existing_suppliers)
+        
+        print("\nProducts to insert:")
+        for p in products:
+            print(f"Product: {p.dict()}")
+        
+        supplier_ids = {p.supplier_id for p in products}
+        print("\nSupplier IDs needed:", supplier_ids)
+        
+        if not existing_suppliers:
+            raise HTTPException(
+                status_code=400,
+                detail="No suppliers found in database. Please create suppliers first."
+            )
+        
+        existing_supplier_ids = {s['supplier_id'] for s in existing_suppliers}
+        print("Existing supplier IDs:", existing_supplier_ids)
+        
+        missing_ids = supplier_ids - existing_supplier_ids
+        if missing_ids:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Suppliers with IDs {missing_ids} do not exist. Available supplier IDs are: {existing_supplier_ids}"
+            )
+        
         result = []
-        for i, prod in enumerate(products):
-            result.append({
-                "product_id": first_id + i,
-                **prod.dict()
-            })
+        for product in products:
+            try:
+                query = """INSERT INTO products (product_name, supplier_id) VALUES (%s, %s)"""
+                values = (product.product_name, product.supplier_id)
+                print(f"\nInserting product: {values}")
+                
+                cursor.execute(query, values)
+                product_id = cursor.lastrowid
+                
+                result.append({
+                    "product_id": product_id,
+                    **product.dict()
+                })
+            except mysql.connector.Error as err:
+                print(f"Error inserting product: {err}")
+                conn.rollback()
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Error inserting product {product.product_name}: {str(err)}"
+                )
+        
+        conn.commit()
         return result
-    except mysql.connector.Error as err:
-        raise HTTPException(status_code=400, detail=str(err))
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
     finally:
         cursor.close()
         conn.close()
@@ -483,353 +570,303 @@ async def create_sales_bulk(sales: List[models.SaleCreate]):
         cursor.close()
         conn.close()
 
-@router.get("/Query1/", tags=["Query1: Get customer info by id"])
-def get_customer_by_id(customer_name: str):
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    
-    try:
-        query = f"SELECT * FROM customers WHERE customer_name = {customer_name}"
-        cursor.execute(query)
-        customers = cursor.fetchall()
-        return customers  # Simply return the dictionary results directly
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
 
-@router.get("/Query2/", tags=["Query2: Get all sales by customer id"])
-def get_sales_by_customer_id(customer_id: int):
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    
-    try:
-        query = f"SELECT * FROM sales WHERE customer_id = {customer_id}"
-        cursor.execute(query)
-        sales = cursor.fetchall()
-        return sales  # Simply return the dictionary results directly
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
-
-@router.get("/Query3/", tags=["Query3: Get project revenue"])
-def get_project_revenue(
-    min_revenue: float = None,
-    min_profit: float = None,
-    project_id: int = None
-):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        
-        query = """
-            SELECT 
-                p.project_id,
-                p.project_name,
-                p.budget,
-                SUM(s.amount) as actual_revenue,
-                (SUM(s.amount) - p.budget) as profit_loss
-            FROM projects p
-            LEFT JOIN sales s ON p.project_id = s.project_id
-            WHERE 1=1
-        """
-        params = []
-
-        if project_id:
-            query += " AND p.project_id = %s"
-            params.append(project_id)
-
-        query += " GROUP BY p.project_id, p.project_name, p.budget HAVING 1=1"
-
-        if min_revenue:
-            query += " AND SUM(s.amount) >= %s"
-            params.append(min_revenue)
-
-        if min_profit:
-            query += " AND (SUM(s.amount) - p.budget) >= %s"
-            params.append(min_profit)
-
-        query += " ORDER BY profit_loss DESC"
-        
-        cursor.execute(query, tuple(params))
-        return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
-@router.get("/Query4/", tags=["Query4: Get employees by department"])
-def get_employees_by_department(department_id: int):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        query = """
-            SELECT e.*, d.department_name 
-            FROM employees e
-            JOIN departments d ON e.department_id = d.department_id
-            WHERE e.department_id = %s
-        """
-        cursor.execute(query, (department_id,))
-        return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
-
-@router.get("/Query5/", tags=["Query5: Get total sales by customer"])
-def get_total_sales_by_customer():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        query = """
-            SELECT c.customer_name, COUNT(s.sale_id) as total_sales, SUM(s.amount) as total_amount
-            FROM customers c
-            LEFT JOIN sales s ON c.customer_id = s.customer_id
-            GROUP BY c.customer_id, c.customer_name
-        """
-        cursor.execute(query)
-        return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
-
-@router.get("/Query6/", tags=["Query6: Get top selling products"])
-def get_top_selling_products(limit: int = 10):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        query = """
-            SELECT p.product_name, COUNT(s.sale_id) as sales_count, SUM(s.amount) as total_revenue
-            FROM products p
-            LEFT JOIN sales s ON p.product_id = s.product_id
-            GROUP BY p.product_id, p.product_name
-            ORDER BY sales_count DESC
-            LIMIT %s
-        """
-        cursor.execute(query, (limit,))
-        return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
-
-@router.get("/Query7/", tags=["Query7: Get employee sales performance"])
-def get_employee_sales_performance():
+@router.get("/Query1/", tags=["Query1: Average Salary by Department"])
+def get_avg_salary_by_dept():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         query = """
             SELECT 
-                e.employee_id,
-                CONCAT(e.first_name, ' ', e.last_name) as employee_name,
-                COUNT(s.sale_id) as total_sales,
-                SUM(s.amount) as total_revenue
-            FROM employees e
-            LEFT JOIN sales s ON e.employee_id = s.employee_id
-            GROUP BY e.employee_id, employee_name
-            ORDER BY total_revenue DESC
-        """
-        cursor.execute(query)
-        return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
-
-@router.get("/Query8/", tags=["Query8: Get project details with team"])
-def get_project_details(project_id: int):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        query = """
-            SELECT 
-                p.*,
                 d.department_name,
-                CONCAT(e.first_name, ' ', e.last_name) as project_lead
-            FROM projects p
-            JOIN departments d ON p.department_id = d.department_id
-            JOIN employees e ON p.employee_id = e.employee_id
-            WHERE p.project_id = %s
+                AVG(e.salary) as average_salary
+            FROM departments d
+            LEFT JOIN employees e ON d.department_id = e.department_id
+            GROUP BY d.department_name
         """
-        cursor.execute(query, (project_id,))
+        cursor.execute(query)
         return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
         conn.close()
 
-@router.get("/Query9/", tags=["Query9: Get supplier performance"])
-def get_supplier_performance():
+
+@router.get("/Query2/", tags=["Query2: Min Sales by Product"])
+def get_min_sales():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                p.product_name,
+                MIN(s.amount) as minimum_sale
+            FROM products p
+            INNER JOIN sales s ON p.product_id = s.product_id
+            GROUP BY p.product_name
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query3/", tags=["Query3: Max Customer Purchases"])
+def get_max_customer_purchases():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                c.customer_name,
+                MAX(s.amount) as largest_purchase
+            FROM sales s
+            RIGHT JOIN customers c ON s.customer_id = c.customer_id
+            GROUP BY c.customer_name
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query4/", tags=["Query4: Employee Count"])
+def get_employee_count():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                d.department_name,
+                COUNT(e.employee_id) as employee_count
+            FROM departments d
+            LEFT JOIN employees e ON d.department_id = e.department_id
+            GROUP BY d.department_name
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query5/", tags=["Query5: Avg Sales per Employee"])
+def get_avg_sales_employee():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                CONCAT(e.first_name, ' ', e.last_name) as employee_name,
+                AVG(s.amount) as average_sale
+            FROM employees e
+            INNER JOIN sales s ON e.employee_id = s.employee_id
+            GROUP BY employee_name
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query6/", tags=["Query6: Products per Supplier"])
+def get_supplier_products():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         query = """
             SELECT 
                 s.supplier_name,
-                COUNT(DISTINCT p.product_id) as total_products,
-                COUNT(sa.sale_id) as total_sales,
-                SUM(sa.amount) as total_revenue
-            FROM suppliers s
-            LEFT JOIN products p ON s.supplier_id = p.supplier_id
-            LEFT JOIN sales sa ON p.product_id = sa.product_id
-            GROUP BY s.supplier_id, s.supplier_name
-            ORDER BY total_revenue DESC
+                COUNT(p.product_id) as total_products
+            FROM products p
+            RIGHT JOIN suppliers s ON p.supplier_id = s.supplier_id
+            GROUP BY s.supplier_name
         """
         cursor.execute(query)
         return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
         conn.close()
 
-@router.get("/Query10/", tags=["Query10: Get sales by date range"])
-def get_sales_by_date_range(start_date: date, end_date: date):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        query = """
-            SELECT 
-                s.*,
-                p.product_name,
-                c.customer_name
-            FROM sales s
-            JOIN products p ON s.product_id = p.product_id
-            JOIN customers c ON s.customer_id = c.customer_id
-            WHERE s.sale_date BETWEEN %s AND %s
-            ORDER BY s.sale_date
-        """
-        cursor.execute(query, (start_date, end_date))
-        return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
 
-@router.get("/Query11/", tags=["Query11: Get department performance"])
-def get_department_performance():
+@router.get("/Query7/", tags=["Query7: Max Budget by Department"])
+def get_max_budget():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         query = """
             SELECT 
                 d.department_name,
-                COUNT(DISTINCT e.employee_id) as employee_count,
-                COUNT(DISTINCT p.project_id) as project_count,
-                SUM(s.amount) as total_sales
+                MAX(p.budget) as highest_budget
             FROM departments d
-            LEFT JOIN employees e ON d.department_id = e.department_id
             LEFT JOIN projects p ON d.department_id = p.department_id
-            LEFT JOIN sales s ON e.employee_id = s.employee_id
-            GROUP BY d.department_id, d.department_name
+            GROUP BY d.department_name
         """
         cursor.execute(query)
         return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
         conn.close()
 
-@router.get("/Query12/", tags=["Query12: Get customer purchase history"])
-def get_customer_purchase_history(customer_id: int):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        query = """
-            SELECT 
-                s.sale_date,
-                p.product_name,
-                s.amount,
-                sup.supplier_name
-            FROM sales s
-            JOIN products p ON s.product_id = p.product_id
-            JOIN suppliers sup ON p.supplier_id = sup.supplier_id
-            WHERE s.customer_id = %s
-            ORDER BY s.sale_date DESC
-        """
-        cursor.execute(query, (customer_id,))
-        return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
 
-@router.get("/Query13/", tags=["Query13: Get products by supplier"])
-def get_products_by_supplier(supplier_id: int):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        query = """
-            SELECT 
-                p.*,
-                COUNT(s.sale_id) as total_sales,
-                SUM(s.amount) as total_revenue
-            FROM products p
-            LEFT JOIN sales s ON p.product_id = s.product_id
-            WHERE p.supplier_id = %s
-            GROUP BY p.product_id, p.product_name
-        """
-        cursor.execute(query, (supplier_id,))
-        return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
-
-@router.get("/Query14/", tags=["Query14: Get employee projects"])
-def get_employee_projects(employee_id: int):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        query = """
-            SELECT 
-                p.*,
-                d.department_name
-            FROM projects p
-            JOIN departments d ON p.department_id = d.department_id
-            WHERE p.employee_id = %s
-            ORDER BY p.start_date DESC
-        """
-        cursor.execute(query, (employee_id,))
-        return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        cursor.close()
-        conn.close()
-
-@router.get("/Query15/", tags=["Query15: Get sales by country"])
-def get_sales_by_country():
+@router.get("/Query8/", tags=["Query8: Min Sales by Country"])
+def get_min_sales_country():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         query = """
             SELECT 
                 c.country,
-                COUNT(s.sale_id) as total_sales,
-                SUM(s.amount) as total_revenue
+                MIN(s.amount) as minimum_sale
             FROM customers c
-            LEFT JOIN sales s ON c.customer_id = s.customer_id
+            INNER JOIN sales s ON c.customer_id = s.customer_id
             GROUP BY c.country
-            ORDER BY total_revenue DESC
         """
         cursor.execute(query)
         return cursor.fetchall()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query9/", tags=["Query9: Avg Products per Supplier"])
+def get_avg_products_supplier():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                s.country,
+                AVG(p.product_id) as avg_products
+            FROM products p
+            RIGHT JOIN suppliers s ON p.supplier_id = s.supplier_id
+            GROUP BY s.country
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query10/", tags=["Query10: Sales by Project"])
+def get_project_sales():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                p.project_name,
+                COUNT(s.sale_id) as total_sales
+            FROM projects p
+            LEFT JOIN sales s ON p.project_id = s.project_id
+            GROUP BY p.project_name
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query11/", tags=["Query11: Max Salary by Position"])
+def get_max_salary_position():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                e.position,
+                MAX(e.salary) as highest_salary
+            FROM employees e
+            INNER JOIN departments d ON e.department_id = d.department_id
+            GROUP BY e.position
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query12/", tags=["Query12: Avg Sales by Country"])
+def get_avg_sales_country():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                c.country,
+                AVG(s.amount) as average_sale
+            FROM sales s
+            RIGHT JOIN customers c ON s.customer_id = c.customer_id
+            GROUP BY c.country
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query13/", tags=["Query13: Min Employees per Project"])
+def get_min_employees_project():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                p.project_name,
+                MIN(e.employee_id) as min_employees
+            FROM projects p
+            LEFT JOIN employees e ON p.department_id = e.department_id
+            GROUP BY p.project_name
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query14/", tags=["Query14: Sales by Supplier"])
+def get_supplier_sales():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                s.supplier_name,
+                COUNT(sa.sale_id) as total_sales
+            FROM suppliers s
+            INNER JOIN products p ON s.supplier_id = p.supplier_id
+            INNER JOIN sales sa ON p.product_id = sa.product_id
+            GROUP BY s.supplier_name
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/Query15/", tags=["Query15: Avg Budget by Department"])
+def get_avg_budget_dept():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT 
+                d.department_name,
+                AVG(p.budget) as average_budget
+            FROM projects p
+            RIGHT JOIN departments d ON p.department_id = d.department_id
+            GROUP BY d.department_name
+        """
+        cursor.execute(query)
+        return cursor.fetchall()
     finally:
         cursor.close()
         conn.close()

@@ -1,86 +1,517 @@
-{
-  "departments": [
-    { "department_name": "Marketing", "place": "New York", "department_head": 2 },
-    { "department_name": "Engineering", "place": "San Francisco", "department_head": 3 },
-    { "department_name": "Sales", "place": "Chicago", "department_head": 4 },
-    { "department_name": "HR", "place": "Boston", "department_head": 5 },
-    { "department_name": "Finance", "place": "Seattle", "department_head": 6 },
-    { "department_name": "Operations", "place": "Dallas", "department_head": 7 },
-    { "department_name": "IT", "place": "Austin", "department_head": 8 },
-    { "department_name": "R&D", "place": "Palo Alto", "department_head": 9 },
-    { "department_name": "Customer Service", "place": "Miami", "department_head": 10 },
-    { "department_name": "Legal", "place": "Washington D.C.", "department_head": 11 }
-  ],
-  "employees": [
-    { "first_name": "Alice", "last_name": "Smith", "email": "alice.smith@example.com", "department_id": 1, "hire_date": "2021-03-15", "salary": 60000.00, "position": "Analyst", "manager_id": 2 },
-    { "first_name": "Bob", "last_name": "Johnson", "email": "bob.johnson@example.com", "department_id": 2, "hire_date": "2020-06-01", "salary": 80000.00, "position": "Engineer", "manager_id": 3 },
-    { "first_name": "Carol", "last_name": "Williams", "email": "carol.williams@example.com", "department_id": 3, "hire_date": "2019-04-22", "salary": 75000.00, "position": "Sales Rep", "manager_id": 4 },
-    { "first_name": "David", "last_name": "Brown", "email": "david.brown@example.com", "department_id": 4, "hire_date": "2018-08-17", "salary": 65000.00, "position": "HR Specialist", "manager_id": 5 },
-    { "first_name": "Emma", "last_name": "Jones", "email": "emma.jones@example.com", "department_id": 5, "hire_date": "2017-11-11", "salary": 90000.00, "position": "Accountant", "manager_id": 6 },
-    { "first_name": "Frank", "last_name": "Miller", "email": "frank.miller@example.com", "department_id": 6, "hire_date": "2016-05-30", "salary": 70000.00, "position": "Operations Manager", "manager_id": 7 },
-    { "first_name": "Grace", "last_name": "Wilson", "email": "grace.wilson@example.com", "department_id": 7, "hire_date": "2021-01-13", "salary": 85000.00, "position": "IT Specialist", "manager_id": 8 },
-    { "first_name": "Henry", "last_name": "Moore", "email": "henry.moore@example.com", "department_id": 8, "hire_date": "2022-07-09", "salary": 95000.00, "position": "R&D Scientist", "manager_id": 9 },
-    { "first_name": "Isabel", "last_name": "Taylor", "email": "isabel.taylor@example.com", "department_id": 9, "hire_date": "2020-02-27", "salary": 62000.00, "position": "Customer Service Rep", "manager_id": 10 },
-    { "first_name": "Jack", "last_name": "Anderson", "email": "jack.anderson@example.com", "department_id": 10, "hire_date": "2019-09-25", "salary": 98000.00, "position": "Legal Advisor", "manager_id": 11 }
-  ],
-  "projects": [
-    { "project_name": "Website Redesign", "start_date": "2023-01-15", "end_date": "2023-06-15", "department_id": 1, "employee_id": 1, "budget": 20000.00, "project_manager": 2 },
-    { "project_name": "AI Development", "start_date": "2022-05-10", "end_date": "2023-11-20", "department_id": 2, "employee_id": 2, "budget": 150000.00, "project_manager": 3 },
-    { "project_name": "Customer Outreach", "start_date": "2021-09-01", "end_date": "2022-03-30", "department_id": 3, "employee_id": 3, "budget": 50000.00, "project_manager": 4 },
-    { "project_name": "Employee Wellness", "start_date": "2023-04-01", "end_date": "2023-10-01", "department_id": 4, "employee_id": 4, "budget": 15000.00, "project_manager": 5 },
-    { "project_name": "Cost Optimization", "start_date": "2022-01-20", "end_date": "2022-12-31", "department_id": 5, "employee_id": 5, "budget": 60000.00, "project_manager": 6 },
-    { "project_name": "Supply Chain Update", "start_date": "2023-02-15", "end_date": "2023-08-20", "department_id": 6, "employee_id": 6, "budget": 30000.00, "project_manager": 7 },
-    { "project_name": "Cybersecurity Training", "start_date": "2022-07-01", "end_date": "2022-09-30", "department_id": 7, "employee_id": 7, "budget": 12000.00, "project_manager": 8 },
-    { "project_name": "Product Launch", "start_date": "2023-03-05", "end_date": "2023-10-15", "department_id": 8, "employee_id": 8, "budget": 180000.00, "project_manager": 9 },
-    { "project_name": "Customer Feedback Analysis", "start_date": "2023-01-10", "end_date": "2023-04-10", "department_id": 9, "employee_id": 9, "budget": 7000.00, "project_manager": 10 },
-    { "project_name": "Compliance Audit", "start_date": "2022-11-15", "end_date": "2023-02-15", "department_id": 10, "employee_id": 10, "budget": 40000.00, "project_manager": 11 }
-  ],
-  "customers": [
-    { "customer_name": "Tech Solutions Inc.", "country": "USA", "phone_number": "+1-555-0123", "email": "contact@techsolutions.com" },
-    { "customer_name": "GreenWorld", "country": "Canada", "phone_number": "+1-555-2345", "email": "info@greenworld.ca" },
-    { "customer_name": "InnovateNow", "country": "UK", "phone_number": "+44-20-1234-5678", "email": "support@innow.com" },
-    { "customer_name": "FastFurnish", "country": "Australia", "phone_number": "+61-3-9999-5555", "email": "hello@fastfurnish.au" },
-    { "customer_name": "SecureData Ltd.", "country": "Germany", "phone_number": "+49-30-1234-5678", "email": "service@securedata.de" },
-    { "customer_name": "HealthPlus", "country": "France", "phone_number": "+33-1-9876-5432", "email": "contact@healthplus.fr" },
-    { "customer_name": "EduConnect", "country": "India", "phone_number": "+91-22-1234-5678", "email": "info@educonnect.in" },
-    { "customer_name": "AutoEdge", "country": "Japan", "phone_number": "+81-3-4567-8910", "email": "sales@autoedge.jp" },
-    { "customer_name": "FashionLine", "country": "Italy", "phone_number": "+39-06-9876-1234", "email": "customer@fashionline.it" },
-    { "customer_name": "MediCare Global", "country": "Brazil", "phone_number": "+55-21-1234-5678", "email": "info@medicare.com.br" }
-  ],
-  "suppliers": [
-    { "supplier_name": "Alpha Supplies", "contact_info": "info@alphasupplies.com", "country": "USA", "phone_number": "+1-555-1111" },
-    { "supplier_name": "Global Goods", "contact_info": "support@globalgoods.com", "country": "Germany", "phone_number": "+49-30-9876-5432" },
-    { "supplier_name": "EcoTrade", "contact_info": "contact@ecotrade.co", "country": "UK", "phone_number": "+44-20-3456-7890" },
-    { "supplier_name": "Direct Source", "contact_info": "service@directsource.com.au", "country": "Australia", "phone_number": "+61-3-8888-9999" },
-    { "supplier_name": "QwikParts", "contact_info": "sales@qwikparts.jp", "country": "Japan", "phone_number": "+81-3-1234-5678" },
-    { "supplier_name": "Mega Supplies", "contact_info": "info@megasupplies.fr", "country": "France", "phone_number": "+33-1-2345-6789" },
-    { "supplier_name": "Allied Imports", "contact_info": "service@alliedimports.it", "country": "Italy", "phone_number": "+39-06-5432-9876" },
-    { "supplier_name": "GreenMart", "contact_info": "support@greenmart.com", "country": "Canada", "phone_number": "+1-555-5678" },
-    { "supplier_name": "QuickTools", "contact_info": "info@quicktools.in", "country": "India", "phone_number": "+91-22-2345-6789" },
-    { "supplier_name": "Reliable Logistics", "contact_info": "contact@reliablelogistics.com.br", "country": "Brazil", "phone_number": "+55-21-9876-5432" }
-  ],
-  "products": [
-    { "product_name": "Office Chair", "supplier_id": 1 },
-    { "product_name": "Laptop Stand", "supplier_id": 2 },
-    { "product_name": "Desk Organizer", "supplier_id": 3 },
-    { "product_name": "Wireless Mouse", "supplier_id": 4 },
-    { "product_name": "Keyboard", "supplier_id": 5 },
-    { "product_name": "Monitor", "supplier_id": 6 },
-    { "product_name": "Printer", "supplier_id": 7 },
-    { "product_name": "Scanner", "supplier_id": 8 },
-    { "product_name": "Desk Lamp", "supplier_id": 9 },
-    { "product_name": "External Hard Drive", "supplier_id": 10 }
-  ],
-  "sales": [
-    { "sale_date": "2023-01-15", "amount": 500.00, "product_id": 1, "customer_id": 1, "supplier_id": 1, "employee_id": 1, "project_id": 1 },
-    { "sale_date": "2023-02-20", "amount": 1200.00, "product_id": 2, "customer_id": 2, "supplier_id": 2, "employee_id": 2, "project_id": 2 },
-    { "sale_date": "2023-03-10", "amount": 750.00, "product_id": 3, "customer_id": 3, "supplier_id": 3, "employee_id": 3, "project_id": 3 },
-    { "sale_date": "2023-04-05", "amount": 620.00, "product_id": 4, "customer_id": 4, "supplier_id": 4, "employee_id": 4, "project_id": 4 },
-    { "sale_date": "2023-05-18", "amount": 1500.00, "product_id": 5, "customer_id": 5, "supplier_id": 5, "employee_id": 5, "project_id": 5 },
-    { "sale_date": "2023-06-07", "amount": 300.00, "product_id": 6, "customer_id": 6, "supplier_id": 6, "employee_id": 6, "project_id": 6 },
-    { "sale_date": "2023-07-11", "amount": 920.00, "product_id": 7, "customer_id": 7, "supplier_id": 7, "employee_id": 7, "project_id": 7 },
-    { "sale_date": "2023-08-23", "amount": 1100.00, "product_id": 8, "customer_id": 8, "supplier_id": 8, "employee_id": 8, "project_id": 8 },
-    { "sale_date": "2023-09-14", "amount": 450.00, "product_id": 9, "customer_id": 9, "supplier_id": 9, "employee_id": 9, "project_id": 9 },
-    { "sale_date": "2023-10-30", "amount": 850.00, "product_id": 10, "customer_id": 10, "supplier_id": 10, "employee_id": 10, "project_id": 10 }
-  ]
-}
+Suppliers:
+[
+  {
+    "supplier_name": "Tech Solutions",
+    "contact_info": "contact@techsolutions.com",
+    "country": "USA",
+    "phone_number": "1234567890"
+  },
+  {
+    "supplier_name": "Global Parts",
+    "contact_info": "info@globalparts.com",
+    "country": "Canada",
+    "phone_number": "2345678901"
+  },
+  {
+    "supplier_name": "Digital Systems",
+    "contact_info": "sales@digitalsystems.com",
+    "country": "UK",
+    "phone_number": "3456789012"
+  },
+  {
+    "supplier_name": "Smart Tech",
+    "contact_info": "info@smarttech.com",
+    "country": "Germany",
+    "phone_number": "4567890123"
+  },
+  {
+    "supplier_name": "Best Electronics",
+    "contact_info": "contact@bestelectronics.com",
+    "country": "France",
+    "phone_number": "5678901234"
+  },
+  {
+    "supplier_name": "Quality Parts",
+    "contact_info": "sales@qualityparts.com",
+    "country": "Japan",
+    "phone_number": "6789012345"
+  },
+  {
+    "supplier_name": "Innovative Solutions",
+    "contact_info": "info@innovative.com",
+    "country": "Australia",
+    "phone_number": "7890123456"
+  },
+  {
+    "supplier_name": "Prime Components",
+    "contact_info": "sales@primecomp.com",
+    "country": "Spain",
+    "phone_number": "8901234567"
+  },
+  {
+    "supplier_name": "Future Tech",
+    "contact_info": "contact@futuretech.com",
+    "country": "Italy",
+    "phone_number": "9012345678"
+  },
+  {
+    "supplier_name": "Elite Supplies",
+    "contact_info": "info@elitesupplies.com",
+    "country": "Brazil",
+    "phone_number": "0123456789"
+  }
+]
+
+Departments:
+[
+  {
+    "department_name": "Sales",
+    "place": "New York",
+    "department_head": 1
+  },
+  {
+    "department_name": "Engineering",
+    "place": "San Francisco",
+    "department_head": 2
+  },
+  {
+    "department_name": "Marketing",
+    "place": "Chicago",
+    "department_head": 3
+  },
+  {
+    "department_name": "Human Resources",
+    "place": "Boston",
+    "department_head": 4
+  },
+  {
+    "department_name": "Finance",
+    "place": "Miami",
+    "department_head": 5
+  },
+  {
+    "department_name": "Operations",
+    "place": "Los Angeles",
+    "department_head": 6
+  },
+  {
+    "department_name": "Research",
+    "place": "Seattle",
+    "department_head": 7
+  },
+  {
+    "department_name": "Legal",
+    "place": "Washington DC",
+    "department_head": 8
+  },
+  {
+    "department_name": "IT Support",
+    "place": "Austin",
+    "department_head": 9
+  },
+  {
+    "department_name": "Customer Service",
+    "place": "Denver",
+    "department_head": 10
+  }
+]
+
+Customers:
+[
+  {
+    "customer_name": "Acme Corp",
+    "country": "USA",
+    "phone_number": "1234567890",
+    "email": "contact@acme.com"
+  },
+  {
+    "customer_name": "Global Tech",
+    "country": "Canada",
+    "phone_number": "2345678901",
+    "email": "info@globaltech.com"
+  },
+  {
+    "customer_name": "Innovation Inc",
+    "country": "UK",
+    "phone_number": "3456789012",
+    "email": "sales@innovation.com"
+  },
+  {
+    "customer_name": "Digital Corp",
+    "country": "Germany",
+    "phone_number": "4567890123",
+    "email": "info@digitalcorp.com"
+  },
+  {
+    "customer_name": "Smart Solutions",
+    "country": "France",
+    "phone_number": "5678901234",
+    "email": "contact@smartsol.com"
+  },
+  {
+    "customer_name": "Tech Giants",
+    "country": "Japan",
+    "phone_number": "6789012345",
+    "email": "info@techgiants.com"
+  },
+  {
+    "customer_name": "Future Systems",
+    "country": "Australia",
+    "phone_number": "7890123456",
+    "email": "sales@futuresys.com"
+  },
+  {
+    "customer_name": "Prime Tech",
+    "country": "Spain",
+    "phone_number": "8901234567",
+    "email": "info@primetech.com"
+  },
+  {
+    "customer_name": "Elite Corp",
+    "country": "Italy",
+    "phone_number": "9012345678",
+    "email": "contact@elitecorp.com"
+  },
+  {
+    "customer_name": "Best Services",
+    "country": "Brazil",
+    "phone_number": "0123456789",
+    "email": "info@bestservices.com"
+  }
+]
+
+Employees:
+[
+  {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@company.com",
+    "department_id": 1,
+    "hire_date": "2023-01-15",
+    "salary": 75000.00,
+    "position": "Manager",
+    "manager_id": null
+  },
+  {
+    "first_name": "Jane",
+    "last_name": "Smith",
+    "email": "jane.smith@company.com",
+    "department_id": 2,
+    "hire_date": "2023-02-01",
+    "salary": 65000.00,
+    "position": "Engineer",
+    "manager_id": 11
+  },
+  {
+    "first_name": "Robert",
+    "last_name": "Johnson",
+    "email": "robert.j@company.com",
+    "department_id": 3,
+    "hire_date": "2023-03-15",
+    "salary": 60000.00,
+    "position": "Analyst",
+    "manager_id": 11
+  },
+  {
+    "first_name": "Maria",
+    "last_name": "Garcia",
+    "email": "maria.g@company.com",
+    "department_id": 4,
+    "hire_date": "2023-04-01",
+    "salary": 85000.00,
+    "position": "Director",
+    "manager_id": 11
+  },
+  {
+    "first_name": "James",
+    "last_name": "Wilson",
+    "email": "james.w@company.com",
+    "department_id": 5,
+    "hire_date": "2023-05-15",
+    "salary": 55000.00,
+    "position": "Coordinator",
+    "manager_id": 14
+  },
+  {
+    "first_name": "Sarah",
+    "last_name": "Brown",
+    "email": "sarah.b@company.com",
+    "department_id": 6,
+    "hire_date": "2023-06-01",
+    "salary": 62000.00,
+    "position": "Specialist",
+    "manager_id": 14
+  },
+  {
+    "first_name": "Michael",
+    "last_name": "Davis",
+    "email": "michael.d@company.com",
+    "department_id": 7,
+    "hire_date": "2023-07-15",
+    "salary": 78000.00,
+    "position": "Manager",
+    "manager_id": 11
+  },
+  {
+    "first_name": "Lisa",
+    "last_name": "Anderson",
+    "email": "lisa.a@company.com",
+    "department_id": 8,
+    "hire_date": "2023-08-01",
+    "salary": 70000.00,
+    "position": "Developer",
+    "manager_id": 17
+  },
+  {
+    "first_name": "David",
+    "last_name": "Martinez",
+    "email": "david.m@company.com",
+    "department_id": 9,
+    "hire_date": "2023-09-15",
+    "salary": 67000.00,
+    "position": "Supervisor",
+    "manager_id": 17
+  },
+  {
+    "first_name": "Emma",
+    "last_name": "Taylor",
+    "email": "emma.t@company.com",
+    "department_id": 10,
+    "hire_date": "2023-10-01",
+    "salary": 59000.00,
+    "position": "Analyst",
+    "manager_id": 19
+  }
+]
+
+Products:
+[
+  {
+    "product_name": "Laptop Pro",
+    "supplier_id": 1
+  },
+  {
+    "product_name": "Smart Monitor",
+    "supplier_id": 2
+  },
+  {
+    "product_name": "Wireless Keyboard",
+    "supplier_id": 3
+  },
+  {
+    "product_name": "Gaming Mouse",
+    "supplier_id": 4
+  },
+  {
+    "product_name": "USB Hub",
+    "supplier_id": 5
+  },
+  {
+    "product_name": "Webcam HD",
+    "supplier_id": 6
+  },
+  {
+    "product_name": "Bluetooth Speaker",
+    "supplier_id": 7
+  },
+  {
+    "product_name": "Graphics Card",
+    "supplier_id": 8
+  },
+  {
+    "product_name": "SSD Drive",
+    "supplier_id": 9
+  },
+  {
+    "product_name": "Power Bank",
+    "supplier_id": 10
+  }
+]
+
+Projects:
+[
+  {
+    "project_name": "Website Redesign",
+    "start_date": "2024-01-01",
+    "end_date": "2024-06-30",
+    "department_id": 1,
+    "employee_id": 1,
+    "budget": 50000.00,
+    "project_manager": 1
+  },
+  {
+    "project_name": "Mobile App Development",
+    "start_date": "2024-02-01",
+    "end_date": "2024-07-31",
+    "department_id": 2,
+    "employee_id": 2,
+    "budget": 75000.00,
+    "project_manager": 2
+  },
+  {
+    "project_name": "Cloud Migration",
+    "start_date": "2024-03-01",
+    "end_date": "2024-08-31",
+    "department_id": 3,
+    "employee_id": 3,
+    "budget": 100000.00,
+    "project_manager": 3
+  },
+  {
+    "project_name": "Security Upgrade",
+    "start_date": "2024-04-01",
+    "end_date": "2024-09-30",
+    "department_id": 4,
+    "employee_id": 4,
+    "budget": 80000.00,
+    "project_manager": 4
+  },
+  {
+    "project_name": "Data Analytics Platform",
+    "start_date": "2024-05-01",
+    "end_date": "2024-10-31",
+    "department_id": 5,
+    "employee_id": 5,
+    "budget": 120000.00,
+    "project_manager": 5
+  },
+  {
+    "project_name": "AI Implementation",
+    "start_date": "2024-06-01",
+    "end_date": "2024-11-30",
+    "department_id": 6,
+    "employee_id": 6,
+    "budget": 150000.00,
+    "project_manager": 6
+  },
+  {
+    "project_name": "Network Upgrade",
+    "start_date": "2024-07-01",
+    "end_date": "2024-12-31",
+    "department_id": 7,
+    "employee_id": 7,
+    "budget": 90000.00,
+    "project_manager": 7
+  },
+  {
+    "project_name": "CRM Integration",
+    "start_date": "2024-08-01",
+    "end_date": "2025-01-31",
+    "department_id": 8,
+    "employee_id": 8,
+    "budget": 85000.00,
+    "project_manager": 8
+  },
+  {
+    "project_name": "ERP Implementation",
+    "start_date": "2024-09-01",
+    "end_date": "2025-02-28",
+    "department_id": 9,
+    "employee_id": 9,
+    "budget": 200000.00,
+    "project_manager": 9
+  },
+  {
+    "project_name": "Digital Marketing Campaign",
+    "start_date": "2024-10-01",
+    "end_date": "2025-03-31",
+    "department_id": 10,
+    "employee_id": 10,
+    "budget": 60000.00,
+    "project_manager": 10
+  }
+]
+
+Sales:
+[
+  {
+    "sale_date": "2024-01-15",
+    "amount": 1500.00,
+    "product_id": 1,
+    "customer_id": 1,
+    "supplier_id": 1,
+    "employee_id": 1,
+    "project_id": 21
+  },
+  {
+    "sale_date": "2024-01-16",
+    "amount": 2000.00,
+    "product_id": 2,
+    "customer_id": 2,
+    "supplier_id": 2,
+    "employee_id": 2,
+    "project_id": 22
+  },
+  {
+    "sale_date": "2024-01-17",
+    "amount": 2500.00,
+    "product_id": 3,
+    "customer_id": 3,
+    "supplier_id": 3,
+    "employee_id": 3,
+    "project_id": 23
+  },
+  {
+    "sale_date": "2024-01-18",
+    "amount": 3000.00,
+    "product_id": 4,
+    "customer_id": 4,
+    "supplier_id": 4,
+    "employee_id": 4,
+    "project_id": 24
+  },
+  {
+    "sale_date": "2024-01-19",
+    "amount": 3500.00,
+    "product_id": 5,
+    "customer_id": 5,
+    "supplier_id": 5,
+    "employee_id": 5,
+    "project_id": 25
+  },
+  {
+    "sale_date": "2024-01-20",
+    "amount": 4000.00,
+    "product_id": 6,
+    "customer_id": 6,
+    "supplier_id": 6,
+    "employee_id": 6,
+    "project_id": 26
+  },
+  {
+    "sale_date": "2024-01-21",
+    "amount": 4500.00,
+    "product_id": 7,
+    "customer_id": 7,
+    "supplier_id": 7,
+    "employee_id": 7,
+    "project_id": 27
+  },
+  {
+    "sale_date": "2024-01-22",
+    "amount": 5000.00,
+    "product_id": 8,
+    "customer_id": 8,
+    "supplier_id": 8,
+    "employee_id": 8,
+    "project_id": 28
+  },
+  {
+    "sale_date": "2024-01-23",
+    "amount": 5500.00,
+    "product_id": 9,
+    "customer_id": 9,
+    "supplier_id": 9,
+    "employee_id": 9,
+    "project_id": 29
+  },
+  {
+    "sale_date": "2024-01-24",
+    "amount": 6000.00,
+    "product_id": 10,
+    "customer_id": 10,
+    "supplier_id": 10,
+    "employee_id": 10,
+    "project_id": 30
+  }
+]
